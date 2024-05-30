@@ -14,6 +14,3 @@ Code based on the monai implementation of the EfficientUNet and the HoVerNet
 
 ## Models checkpoints
 Models weights to come
-
-## Notes
-The code will be available after the ISBI 2024 conference
