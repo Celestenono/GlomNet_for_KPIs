@@ -1,0 +1,14 @@
+paths:
+  path_data: "/your_directory/data_for_training/"
+  path_output: "/your_directory/training_runs/"
+  path_model: "/your_directory/training_runs/runs_bin/best_model.pth"
+
+hyperparameters:
+  dataset_type: test
+  fold_num: 0
+  num_workers: 4
+  in_channels: 4
+  out_channels: 2
+  hovermaps: False
+  batch_size: 8
+  patch_size: 512
