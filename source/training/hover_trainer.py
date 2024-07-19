@@ -11,7 +11,7 @@ from torch.utils.tensorboard import SummaryWriter
 from monai.visualize import plot_2d_or_3d_image
 
 from source.dataloading.cross_validation_split import cross_validation_split
-from source.dataloading.patch_extraction import patch_extraction
+from source.dataloading.patch_extraction_kpis import patch_extraction
 from source.dataloading.hover_patch_dataset import HoverPatchDataset
 from source.models.glomNet import HoVerNet
 from source.losses.custum_loss import HoVerNetLoss
@@ -41,7 +41,7 @@ class Trainer_hover():
         self.nb_batch_per_epochs = cfg["hyperparameters"]["nb_batch_per_epochs"]
         self.nb_epochs = cfg["hyperparameters"]["nb_epochs"]
         self.batch_size = cfg["hyperparameters"]["batch_size"]
-        self.patch_size = (cfg["hyperparameters"]["patch_size"], cfg["hyperparameters"]["patch_size"])
+        # self.patch_size = (cfg["hyperparameters"]["patch_size"], cfg["hyperparameters"]["patch_size"])
 
         self.configs["training_info"] = {}
         self.configs["training_info"]["cross_validation"] = self.cross_validation_fold
@@ -78,10 +78,8 @@ class Trainer_hover():
 
     def prepare_data(self):
         if self.use_same_data_as == "None":
-            self.data_train = patch_extraction(self.path_data, data_list=self.cross_validation_fold["train"],
-                                               patch_size=self.patch_size)
-            self.data_val = patch_extraction(self.path_data, data_list=self.cross_validation_fold["val"],
-                                             patch_size=self.patch_size)
+            self.data_train = patch_extraction(self.path_data, data_list=self.cross_validation_fold["train"])
+            self.data_val = patch_extraction(self.path_data, data_list=self.cross_validation_fold["val"])
             with open(self.path_output + "/data_train.json", "w") as json_file:
                 json_file.write(json.dumps(self.data_train))
             with open(self.path_output + "/data_val.json", "w") as json_file:

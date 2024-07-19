@@ -1,10 +1,10 @@
 paths:
-  path_data: "/your_directory/data_for_training/"
-  path_output: "/your_directory/training_runs/"
+  path_data: "/scratch/nmoreau/KPIs_challenge/Training_data/Task2_WSI_level/"
+  path_output: "/scratch/nmoreau/KPIs_challenge/training_runs/"
 
 hyperparameters:
   fold_num: 0
-  use_same_data_as: "/your_directory/training_runs/runs_bin/" #to use the same order of patches during training
+  use_same_data_as: None
   num_workers: 8
   in_channels: 4
   out_channels: 2
@@ -17,4 +17,3 @@ hyperparameters:
   nb_batch_per_epochs: 50
   nb_epochs: 150
   batch_size: 8
-  patch_size: 512

@@ -15,7 +15,7 @@ import monai
 
 if __name__ == "__main__":
     monai.utils.set_determinism(seed=0, additional_settings=None)
-    with open("training_config_hover.yml", "r") as ymlfile:
+    with open("test_training_config_hover.yml", "r") as ymlfile:
         cfg = yaml.safe_load(ymlfile)
 
     train_transforms = Compose(
