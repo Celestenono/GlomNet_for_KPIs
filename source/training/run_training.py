@@ -8,6 +8,7 @@ from monai.transforms import (
     OneOf,
     MedianSmoothd,
     RandGaussianSmoothd,
+    Resized
 )
 
 from source.training.hover_trainer import Trainer_hover
@@ -29,6 +30,7 @@ if __name__ == "__main__":
                     RandGaussianNoised(keys=["image"], prob=1.0, std=0.05),
                 ]
             ),
+            Resized(keys=["image", "label_bin", "label_hover"], spatial_size=(512, 512))
 
         ]
     )
@@ -36,6 +38,7 @@ if __name__ == "__main__":
         [
             EnsureChannelFirstd(keys=["image"], channel_dim=2),
             ScaleIntensityd(keys=["image"]),
+            Resized(keys=["image", "label_bin", "label_hover"], spatial_size=(512, 512))
         ]
     )
     transforms = {}
