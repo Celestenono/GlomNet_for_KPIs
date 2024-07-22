@@ -21,7 +21,7 @@ class HoverPatchDataset(Dataset):
                  transform: Optional[Callable] = None) -> None:
         super().__init__(data=data, transform=transform)
         self.path_data = path_data
-        self.patch_size = (1024, 1024)
+        self.global_patch_size = (1024, 1024)
         # self.patch_size = data["infos"]["patch_size"]
         self.transform = transform
         self.hovermaps = hovermaps
@@ -38,31 +38,30 @@ class HoverPatchDataset(Dataset):
         mask_filename = patch_info["image_name"] + "mask.tiff"
         dir = patch_info["dir"]
         magnification = patch_info["magnification"]
-        patch_size_patch = patch_info["patch_size"]
+        patch_size = patch_info["patch_size"]
         x = patch_info["x"]
         y = patch_info["y"]
-        pad_size_x = patch_size_patch[0]
-        pad_size_y = patch_size_patch[1]
+        pad_size = patch_size
         flip_h = random.randint(0, 1)
         flip_v = random.randint(0, 1)
         # if True:
         if os.path.exists(self.path_data + "/" + dir + "/" + image_filename) and os.path.exists(self.path_data + "/" + dir + "/" + mask_filename):
             image_openslide = OpenSlide(self.path_data + "/" + dir + "/" + image_filename)
             mask_openslide = OpenSlide(self.path_data + "/" + dir + "/" + mask_filename)
-
-            x_big = max(0, x-pad_size_x)
-            y_big = max(0, y-pad_size_y)
-            pad_size_x = x-x_big
-            pad_size_y = y - y_big
-            big_patch_size = [patch_size_patch[0]+(2*pad_size_x), patch_size_patch[0]+(2*pad_size_y)]
-            big_patch_image = image_openslide.read_region((x_big, y_big), 0, big_patch_size)
-            big_patch_mask = mask_openslide.read_region((x_big, y_big), 0, big_patch_size)
+            image_size = image_openslide.dimensions
+            x_min = max(0, x-pad_size[0])
+            y_min = max(0, y-pad_size[1])
+            new_x = x-x_min
+            new_y = y-y_min
+            x_max = min(x_min+2*pad_size[0] + patch_size[0], image_size[0])
+            y_max = min(y_min+2*pad_size[1] + patch_size[1], image_size[1])
+            big_patch_size = [x_max-x_min, y_max-y_min]
+            big_patch_image = image_openslide.read_region((x_min, y_min), 0, big_patch_size)
+            big_patch_mask = mask_openslide.read_region((x_min, y_min), 0, big_patch_size)
 
             if magnification == 80:
                 big_patch_image = big_patch_image.reduce(2)
                 big_patch_mask = big_patch_mask.reduce(2)
-                pad_size_x = pad_size_x // 2
-                pad_size_y = pad_size_y // 2
             big_patch_image_array = np.array(big_patch_image)
             big_patch_image.close()
             big_patch_mask_array = np.array(big_patch_mask)[:, :, 0]
@@ -71,10 +70,10 @@ class HoverPatchDataset(Dataset):
 
             if self.hovermaps:
                 array_hoverMaps = compute_hovermaps(big_patch_mask_array)
-                patch_array_hoverMaps = array_hoverMaps[:, pad_size_x:pad_size_x + self.patch_size[0], pad_size_y:pad_size_y + self.patch_size[1]]
+                patch_array_hoverMaps = array_hoverMaps[:, new_x:new_x + self.global_patch_size[0], new_y:new_y + self.global_patch_size[1]]
             big_patch_mask_array[big_patch_mask_array > 0] = 1
-            patch_array_microscope = big_patch_image_array[pad_size_x:pad_size_x + self.patch_size[0], pad_size_y:pad_size_y + self.patch_size[1]]
-            patch_array_mask = big_patch_mask_array[pad_size_x:pad_size_x + self.patch_size[0], pad_size_y:pad_size_y + self.patch_size[1]]
+            patch_array_microscope = big_patch_image_array[new_x:new_x + self.global_patch_size[0], new_y:new_y + self.global_patch_size[1]]
+            patch_array_mask = big_patch_mask_array[new_x:new_x + self.global_patch_size[0], new_y:new_y + self.global_patch_size[1]]
 
             if flip_h:
                 patch_array_microscope = np.fliplr(patch_array_microscope)
@@ -107,6 +106,7 @@ class HoverPatchDataset(Dataset):
             item_trans = self.transform(item)
         except:
             print(image_filename, x, y)
+            raise Exception
         return item_trans
 
 from monai.transforms import (
@@ -126,6 +126,11 @@ if __name__ == "__main__":
     raw_training_directory = "/Users/nmoreau/Documents/KPIs_challenge/KPIs24 Training Data/Task2_WSI_level/"
     with open(raw_training_directory + "/data_train.json", "r") as json_file:
         data_train = json.load(json_file)
+    # data_train = {"all_shuffle": [{"image_name": "08-474_02_", "dir": "NEP25", "x": 0, "y": 17152, "magnification": 40,
+    #     "patch_size": [1024, 1024], "glom": False}, {"image_name": "08-474_02_", "dir": "NEP25", "x": 0, "y": 17152,
+    #     "magnification": 40, "patch_size": [1024, 1024], "glom": False},
+    #     {"image_name": "08-474_02_", "dir": "NEP25", "x": 0, "y": 17152, "magnification": 40, "patch_size": [1024, 1024],
+    #      "glom": False}]}
     with open(raw_training_directory + "/data_val.json", "r") as json_file:
         data_val = json.load(json_file)
     train_transforms = Compose(
