@@ -103,8 +103,10 @@ class HoverPatchDataset(Dataset):
         else:
             item = {"image": patch_array_microscope, "label_bin": np.array([patch_array_mask]),
                     "image_name": image_filename}
-
-        item_trans = self.transform(item)
+        try:
+            item_trans = self.transform(item)
+        except:
+            print(image_filename, x, y)
         return item_trans
 
 from monai.transforms import (
@@ -115,6 +117,7 @@ from monai.transforms import (
     OneOf,
     MedianSmoothd,
     RandGaussianSmoothd,
+    Resized
 )
 from torch.utils.data import DataLoader
 
@@ -136,6 +139,7 @@ if __name__ == "__main__":
             #         RandGaussianNoised(keys=["image"], prob=1.0, std=0.05),
             #     ]
             # ),
+            Resized(keys=["image", "label_bin", "label_hover"], spatial_size=(512, 512))
 
         ]
     )
