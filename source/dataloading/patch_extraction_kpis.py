@@ -14,8 +14,8 @@ MAGNIFICATIONS = {"56Nx": 80, "DN": 80, "NEP25": 40, "normal": 80}
 PATCH_SIZE = {"56Nx": 2048, "DN": 2048, "NEP25": 1024, "normal": 2048}
 
 def reorga_and_shuffle_data(json_patches):
-    list_glom = json_patches["glomerulus"]
-    list_non_glom = json_patches["non_glomerulus"]
+    list_glom = json_patches["glomerulus"].copy()
+    list_non_glom = json_patches["non_glomerulus"].copy()
     list_index_non_glom = list(range(0, len(list_non_glom)))
     for patch_dict_i in range(0, len(list_glom)):
         patch_dict = list_glom[patch_dict_i]
@@ -27,6 +27,35 @@ def reorga_and_shuffle_data(json_patches):
             list_glom[patch_dict_i] = patch_dict
     random.shuffle(list_glom)
     json_patches["all_shuffle"] = list_glom
+    return json_patches
+
+def clean_dataset(json_patches, path_data):
+    list_data = json_patches["all_shuffle"]
+    new_list = []
+    nb_glom = 0
+    for patch_dict_i in range(0, len(list_data)):
+        patch_dict = list_data[patch_dict_i]
+        image_filename = patch_dict["image_name"] + "wsi.tiff"
+        mask_filename = patch_dict["image_name"] + "mask.tiff"
+        dir = patch_dict["dir"]
+        magnification = patch_dict["magnification"]
+        patch_size_patch = patch_dict["patch_size"]
+        x = patch_dict["x"]
+        y = patch_dict["y"]
+        image_openslide = OpenSlide(path_data + "/" + dir + "/" + image_filename)
+        image_size = image_openslide.dimensions
+        if x+patch_size_patch[0] < image_size[0] and y+patch_size_patch[1] < image_size[1]:
+            new_list.append(patch_dict)
+            if patch_dict["glom"]:
+                nb_glom += 1
+        else:
+            print(image_filename, x, y)
+        # else:
+        #     print("to small")
+    print(len(list_data))
+    print(len(new_list))
+    print(nb_glom)
+    json_patches["all_shuffle"] = new_list
     return json_patches
 
 def patch_extraction(path_data, data_list = []):
@@ -60,7 +89,8 @@ def patch_extraction(path_data, data_list = []):
                         patch_image_gray = rgb2gray(patch_image)
                         patch_mask = np.array(mask_openslide.read_region((x, y), 0, patch_size))[:, :, 0]
                         patch_image_gray[patch_image_gray > 190] = 0 #210, 190
-                        if np.count_nonzero(patch_image_gray) > (patch_size[0] * patch_size[1] / 4):
+                        if np.count_nonzero(patch_image_gray) > (patch_size[0] * patch_size[1] / 4) and \
+                                x+patch_size[0] < image_size[0] and y+patch_size[1] < image_size[1]:
                             patch_info = {}
                             patch_info["image_name"] = image_filename[:-8]
                             patch_info["dir"] = dir
@@ -89,10 +119,22 @@ if __name__ == "__main__":
     cross_validation_fold = cross_validation_split(fold_num=0)
     data_train = patch_extraction(raw_training_directory, data_list=cross_validation_fold["train"])
     data_val = patch_extraction(raw_training_directory, data_list=cross_validation_fold["val"])
-    with open(raw_training_directory + "/data_train_bis.json", "w") as json_file:
-        json_file.write(json.dumps(data_train))
-    with open(raw_training_directory + "/data_val_bis.json", "w") as json_file:
-        json_file.write(json.dumps(data_val))
+    # with open(raw_training_directory + "/data_train_bis.json", "w") as json_file:
+    #     json_file.write(json.dumps(data_train))
+    # with open(raw_training_directory + "/data_val_bis.json", "w") as json_file:
+    #     json_file.write(json.dumps(data_val))
+
+    # raw_training_directory = "/Users/nmoreau/Documents/KPIs_challenge/KPIs24 Training Data/Task2_WSI_level/"
+    # with open(raw_training_directory + "/data_train.json", "r") as json_file:
+    #     data_train = json.load(json_file)
+    # with open(raw_training_directory + "/data_val.json", "r") as json_file:
+    #     data_val = json.load(json_file)
+    # data_train = clean_dataset(data_train, raw_training_directory)
+    # data_val = clean_dataset(data_val, raw_training_directory)
+    # with open(raw_training_directory + "/data_train_correct.json", "w") as json_file:
+    #     json_file.write(json.dumps(data_train))
+    # with open(raw_training_directory + "/data_val_correct.json", "w") as json_file:
+    #     json_file.write(json.dumps(data_val))
     # dir = "DN"
     # patch_size = (PATCH_SIZE[dir], PATCH_SIZE[dir])
     # json_patches = {}
