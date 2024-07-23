@@ -14,7 +14,6 @@ MAGNIFICATIONS = {"56Nx": 80, "DN": 80, "NEP25": 40, "normal": 80}
 def read_image_openslide(path_image, reduce_factor, patch_size = (10000,10000)):
     image_openslide = OpenSlide(path_image)
     image_dimension = image_openslide.dimensions
-    print(image_dimension)
     array_microscope = np.full((math.ceil(image_dimension[1]/reduce_factor), math.ceil(image_dimension[0]/reduce_factor), 4), 0, dtype='uint8')
     for x in range(0, image_dimension[0], patch_size[0]):
         patch_size_x = min(image_dimension[0] - x, patch_size[0])
@@ -38,23 +37,24 @@ class ImageDataset(Dataset):
     def _transform(self, index: int):
         image_name = self.data[index]
         if os.path.exists(self.path_data + "/56Nx/" + image_name):
-            # image_microscope = Image.open(self.path_data + "/56Nx/" + image_name)
-            # image_microscope = image_microscope.reduce(4)
-            array_microscope = read_image_openslide(self.path_data + "/56Nx/" + image_name, reduce_factor=4)
+            image_microscope = Image.open(self.path_data + "/56Nx/" + image_name)
+            image_microscope = image_microscope.reduce(4)
+            # array_microscope = read_image_openslide(self.path_data + "/56Nx/" + image_name, reduce_factor=4)
         elif os.path.exists(self.path_data + "/DN/" + image_name):
-            # image_microscope = Image.open(self.path_data + "/DN/" + image_name)
-            # image_microscope = image_microscope.reduce(4)
-            array_microscope = read_image_openslide(self.path_data + "/DN/" + image_name, reduce_factor=4)
+            image_microscope = Image.open(self.path_data + "/DN/" + image_name)
+            image_microscope = image_microscope.reduce(4)
+            # array_microscope = read_image_openslide(self.path_data + "/DN/" + image_name, reduce_factor=4)
         elif os.path.exists(self.path_data + "/NEP25/" + image_name):
-            # image_microscope = Image.open(self.path_data + "/NEP25/" + image_name)
-            # image_microscope = image_microscope.reduce(2)
-            array_microscope = read_image_openslide(self.path_data + "/NEP25/" + image_name, reduce_factor=2)
+            image_microscope = Image.open(self.path_data + "/NEP25/" + image_name)
+            image_microscope = image_microscope.reduce(2)
+            # array_microscope = read_image_openslide(self.path_data + "/NEP25/" + image_name, reduce_factor=2)
         elif os.path.exists(self.path_data + "/normal/" + image_name):
-            # image_microscope = Image.open(self.path_data + "/normal/" + image_name)
-            # image_microscope = image_microscope.reduce(4)
-            array_microscope = read_image_openslide(self.path_data + "/normal/" + image_name, reduce_factor=4)
+            image_microscope = Image.open(self.path_data + "/normal/" + image_name)
+            image_microscope = image_microscope.reduce(4)
+            # array_microscope = read_image_openslide(self.path_data + "/normal/" + image_name, reduce_factor=4)
         else:
             raise Exception("No file with this name:"+image_name)
+        array_microscope = np.array(image_microscope)
         array_microscope_alpha_channel = np.expand_dims(array_microscope[:, :, 2], axis=2)
         array_microscope = np.concatenate((array_microscope, array_microscope_alpha_channel), axis=2)
         array_microscope[:, :, 3][array_microscope[:, :, 2] > 0] = 255
