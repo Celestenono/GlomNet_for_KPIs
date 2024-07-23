@@ -119,7 +119,7 @@ class Inference():
             loader = self.val_loader
         for test_data in loader:
             test_image, test_image_name = test_data["image"], test_data["image_name"]
-            test_image_name = test_image_name[0][:-4]
+            test_image_name = test_image_name[0][:-8]
             print(test_image_name)
             with torch.no_grad():
                 test_results = self.__sliding_window_inference(test_image)

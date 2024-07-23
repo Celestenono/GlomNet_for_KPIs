@@ -4,7 +4,7 @@ Image.MAX_IMAGE_PIXELS = None
 import numpy as np
 
 from monai.data.dataset import Dataset
-from openslide import OpenSlide
+# from openslide import OpenSlide
 
 MAGNIFICATIONS = {"56Nx": 80, "DN": 80, "NEP25": 40, "normal": 80}
 class ImageDataset(Dataset):
