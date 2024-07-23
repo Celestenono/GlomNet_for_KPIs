@@ -1,12 +1,12 @@
 paths:
-  path_data: "/scratch/nmoreau/KPIs_challenge/Validation_data/Task2_WSI_level/"
+  path_data: "/scratch/nmoreau/KPIs_challenge/Validation_bis/"
   path_output: "/scratch/nmoreau/KPIs_challenge/training_runs/"
   path_model: "/scratch/nmoreau/KPIs_challenge/training_runs/runs_22_07_2024_13_57_17_fold_0_hover/best_metric_model_segmentation2d_dict_epoch_85.pth"
 
 hyperparameters:
   dataset_type: test
   fold_num: 0
-  num_workers: 2
+  num_workers: 1
   in_channels: 4
   out_channels: 2
   hovermaps: True
