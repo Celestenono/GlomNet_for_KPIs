@@ -149,8 +149,8 @@ from monai.transforms import (
 
 
 if __name__ == "__main__":
-    # with open("inf_config_hover.yml", "r") as ymlfile:
-    with open("test_inf_config_bin.yml", "r") as ymlfile:
+    with open("inf_config_hover.yml", "r") as ymlfile:
+    # with open("test_inf_config_hover.yml", "r") as ymlfile:
         cfg = yaml.safe_load(ymlfile)
 
     validation_transforms = Compose(

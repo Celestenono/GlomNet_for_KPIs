@@ -1,7 +1,7 @@
 paths:
-  path_data: "/your_directory/data_for_training/"
-  path_output: "/your_directory/training_runs/"
-  path_model: "/your_directory/training_runs/runs_hover/best_model.pth"
+  path_data: "/scratch/nmoreau/KPIs_challenge/Training_data/Task2_WSI_level/"
+  path_output: "/scratch/nmoreau/KPIs_challenge/training_runs/"
+  path_model: "/scratch/nmoreau/KPIs_challenge/training_runs/runs_22_07_2024_13_57_17_fold_0_hover/best_metric_model_segmentation2d_dict_epoch_85.pth"
 
 hyperparameters:
   dataset_type: test
