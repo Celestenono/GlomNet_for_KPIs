@@ -1,5 +1,5 @@
 paths:
-  path_data: "/scratch/nmoreau/KPIs_challenge/Training_data/Task2_WSI_level/"
+  path_data: "/scratch/nmoreau/KPIs_challenge/Validation_data/Task2_WSI_level/"
   path_output: "/scratch/nmoreau/KPIs_challenge/training_runs/"
   path_model: "/scratch/nmoreau/KPIs_challenge/training_runs/runs_22_07_2024_13_57_17_fold_0_hover/best_metric_model_segmentation2d_dict_epoch_85.pth"
 

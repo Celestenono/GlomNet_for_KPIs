@@ -28,6 +28,8 @@ class ImageDataset(Dataset):
         elif os.path.exists(self.path_data + "/normal/" + image_name):
             image_microscope = Image.open(self.path_data + "/normal/" + image_name)
             image_microscope = image_microscope.reduce(4)
+        else:
+            raise Exception("No file with this name:"+image_name)
         array_microscope = np.array(image_microscope)
         array_microscope_alpha_channel = np.expand_dims(array_microscope[:, :, 2], axis=2)
         array_microscope = np.concatenate((array_microscope, array_microscope_alpha_channel), axis=2)
