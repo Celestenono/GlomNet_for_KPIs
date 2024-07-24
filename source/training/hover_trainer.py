@@ -248,7 +248,7 @@ class Trainer_hover():
                 epoch_loss_values_val.append(epoch_loss_val)
                 print(f"epoch {epoch + 1} average validation loss: {epoch_loss_val:.4f}")
                 self.logger.info(f"epoch {epoch + 1} average validation loss: {epoch_loss_val:.4f}")
-                if epoch_loss_val < best_epoch_loss_val or epoch+1 == 50 or epoch+1 == 100:
+                if epoch_loss_val < best_epoch_loss_val:
                     best_epoch_loss_val = epoch_loss_val
                     best_epoch_loss_val_epoch = epoch + 1
                     torch.save({
@@ -259,6 +259,14 @@ class Trainer_hover():
                         best_epoch_loss_val_epoch) + ".pth")
                     print("saved new best metric model")
                     self.logger.info("saved new best metric model")
+                if epoch+1 == 50 or epoch+1 == 100:
+                    torch.save({
+                        'epoch': epoch,
+                        'model_state_dict': self.model.state_dict(),
+                        'optimizer_state_dict': self.optimizer.state_dict()
+                    }, self.path_output + "/model_segmentation2d_dict_epoch_" + str(
+                        best_epoch_loss_val_epoch) + ".pth")
+
                 print(
                     "current epoch: {} current loss val: {:.4f} best loss val: {:.4f} at epoch {}".format(
                         epoch + 1, epoch_loss_val, best_epoch_loss_val, best_epoch_loss_val_epoch

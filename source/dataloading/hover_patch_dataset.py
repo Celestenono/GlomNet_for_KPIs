@@ -102,11 +102,7 @@ class HoverPatchDataset(Dataset):
         else:
             item = {"image": patch_array_microscope, "label_bin": np.array([patch_array_mask]),
                     "image_name": image_filename}
-        try:
-            item_trans = self.transform(item)
-        except:
-            print(image_filename, x, y)
-            raise Exception
+        item_trans = self.transform(item)
         return item_trans
 
 from monai.transforms import (

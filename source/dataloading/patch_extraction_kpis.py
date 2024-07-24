@@ -11,7 +11,8 @@ from source.dataloading.cross_validation_split import cross_validation_split
 import json
 
 MAGNIFICATIONS = {"56Nx": 80, "DN": 80, "NEP25": 40, "normal": 80}
-PATCH_SIZE = {"56Nx": 2048, "DN": 2048, "NEP25": 1024, "normal": 2048}
+# PATCH_SIZE = {"56Nx": 2048, "DN": 2048, "NEP25": 1024, "normal": 2048}
+PATCH_SIZE = {"56Nx": 1024, "DN": 1024, "NEP25": 512, "normal": 1024}
 
 def reorga_and_shuffle_data(json_patches):
     list_glom = json_patches["glomerulus"].copy()

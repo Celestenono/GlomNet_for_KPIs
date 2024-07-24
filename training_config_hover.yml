@@ -4,7 +4,7 @@ paths:
 
 hyperparameters:
   fold_num: 0
-  use_same_data_as: "/scratch/nmoreau/KPIs_challenge/training_runs/runs_22_07_2024_10_41_50_fold_0_hover/"
+  use_same_data_as: None
   num_workers: 8
   in_channels: 4
   out_channels: 2
