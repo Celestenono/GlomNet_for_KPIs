@@ -129,7 +129,7 @@ class Trainer_hover():
                                            weight_decay=self.weight_decay)
         self.optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, self.model.parameters()), self.initial_learning_rate, weight_decay=self.weight_decay,
                                     momentum=0.99, nesterov=True)
-        self.lr_scheduler = PolyLRScheduler(self.optimizer, self.initial_lr, self.num_epochs)
+        self.lr_scheduler = PolyLRScheduler(self.optimizer, self.initial_learning_rate, self.num_epochs)
         if self.continue_training != "None":
             checkpoint = torch.load(self.continue_training)
             self.model.load_state_dict(checkpoint['model_state_dict'])
