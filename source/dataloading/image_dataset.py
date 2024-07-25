@@ -8,6 +8,8 @@ import numpy as np
 from monai.data.dataset import Dataset
 from openslide import OpenSlide
 import math
+import tifffile
+import scipy.ndimage as ndi
 
 MAGNIFICATIONS = {"56Nx": 80, "DN": 80, "NEP25": 40, "normal": 80}
 
@@ -37,24 +39,32 @@ class ImageDataset(Dataset):
     def _transform(self, index: int):
         image_name = self.data[index]
         if os.path.exists(self.path_data + "/56Nx/img/" + image_name):
-            image_microscope = Image.open(self.path_data + "/56Nx/img/" + image_name)
-            image_microscope = image_microscope.reduce(2)
+            # image_microscope = Image.open(self.path_data + "/56Nx/img/" + image_name)
+            # image_microscope = image_microscope.reduce(2)
+            original_tiff = tifffile.imread(self.path_data + "/56Nx/img/" + image_name, key=0)
+            array_microscope = ndi.zoom(original_tiff, (1 / 2, 1 / 2, 1), order=1)
             # array_microscope = read_image_openslide(self.path_data + "/56Nx/" + image_name, reduce_factor=4)
         elif os.path.exists(self.path_data + "/DN/img/" + image_name):
-            image_microscope = Image.open(self.path_data + "/DN/img/" + image_name)
-            image_microscope = image_microscope.reduce(2)
+            # image_microscope = Image.open(self.path_data + "/DN/img/" + image_name)
+            # image_microscope = image_microscope.reduce(2)
+            original_tiff = tifffile.imread(self.path_data + "/DN/img/" + image_name, key=0)
+            array_microscope = ndi.zoom(original_tiff, (1 / 2, 1 / 2, 1), order=1)
             # array_microscope = read_image_openslide(self.path_data + "/DN/" + image_name, reduce_factor=4)
         elif os.path.exists(self.path_data + "/NEP25/img/" + image_name):
-            image_microscope = Image.open(self.path_data + "/NEP25/img/" + image_name)
+            # image_microscope = Image.open(self.path_data + "/NEP25/img/" + image_name)
             # image_microscope = image_microscope.reduce(2)
             # array_microscope = read_image_openslide(self.path_data + "/NEP25/" + image_name, reduce_factor=2)
+            original_tiff = tifffile.imread(self.path_data + "/NEP25/img/" + image_name, key=0)
+            array_microscope = ndi.zoom(original_tiff, (1 / 1, 1 / 1, 1), order=1)
         elif os.path.exists(self.path_data + "/normal/img/" + image_name):
             image_microscope = Image.open(self.path_data + "/normal/img/" + image_name)
-            image_microscope = image_microscope.reduce(2)
+            # image_microscope = image_microscope.reduce(2)
             # array_microscope = read_image_openslide(self.path_data + "/normal/" + image_name, reduce_factor=4)
+            original_tiff = tifffile.imread(self.path_data + "/normal/img/" + image_name, key=0)
+            array_microscope = ndi.zoom(original_tiff, (1 / 2, 1 / 2, 1), order=1)
         else:
             raise Exception("No file with this name: "+self.path_data + "/?/img/" + image_name)
-        array_microscope = np.array(image_microscope)
+        # array_microscope = np.array(image_microscope)
         array_microscope_alpha_channel = np.expand_dims(array_microscope[:, :, 2], axis=2)
         array_microscope = np.concatenate((array_microscope, array_microscope_alpha_channel), axis=2)
         array_microscope[:, :, 3][array_microscope[:, :, 2] > 0] = 255
