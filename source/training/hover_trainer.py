@@ -16,7 +16,7 @@ from source.dataloading.hover_patch_dataset import HoverPatchDataset
 from source.models.glomNet import HoVerNet
 from source.losses.custum_loss import HoVerNetLoss
 
-from torch.optim.lr_scheduler import LRScheduler
+from torch.optim.lr_scheduler import _LRScheduler
 
 class PolyLRScheduler(LRScheduler):
     def __init__(self, optimizer, initial_lr: float, max_steps: int, exponent: float = 0.9, current_step: int = None):
