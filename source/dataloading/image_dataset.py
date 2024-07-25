@@ -38,19 +38,19 @@ class ImageDataset(Dataset):
         image_name = self.data[index]
         if os.path.exists(self.path_data + "/56Nx/img/" + image_name):
             image_microscope = Image.open(self.path_data + "/56Nx/img/" + image_name)
-            image_microscope = image_microscope.reduce(4)
+            image_microscope = image_microscope.reduce(2)
             # array_microscope = read_image_openslide(self.path_data + "/56Nx/" + image_name, reduce_factor=4)
         elif os.path.exists(self.path_data + "/DN/img/" + image_name):
             image_microscope = Image.open(self.path_data + "/DN/img/" + image_name)
-            image_microscope = image_microscope.reduce(4)
+            image_microscope = image_microscope.reduce(2)
             # array_microscope = read_image_openslide(self.path_data + "/DN/" + image_name, reduce_factor=4)
         elif os.path.exists(self.path_data + "/NEP25/img/" + image_name):
             image_microscope = Image.open(self.path_data + "/NEP25/img/" + image_name)
-            image_microscope = image_microscope.reduce(2)
+            # image_microscope = image_microscope.reduce(2)
             # array_microscope = read_image_openslide(self.path_data + "/NEP25/" + image_name, reduce_factor=2)
         elif os.path.exists(self.path_data + "/normal/img/" + image_name):
             image_microscope = Image.open(self.path_data + "/normal/img/" + image_name)
-            image_microscope = image_microscope.reduce(4)
+            image_microscope = image_microscope.reduce(2)
             # array_microscope = read_image_openslide(self.path_data + "/normal/" + image_name, reduce_factor=4)
         else:
             raise Exception("No file with this name: "+self.path_data + "/?/img/" + image_name)
