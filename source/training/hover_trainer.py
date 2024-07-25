@@ -127,7 +127,7 @@ class Trainer_hover():
         self.optimizer = torch.optim.AdamW(filter(lambda p: p.requires_grad, self.model.parameters()),
                                            lr=self.initial_learning_rate,
                                            weight_decay=self.weight_decay)
-        self.optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, self.model.parameters()), self.initial_lr, weight_decay=self.weight_decay,
+        self.optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, self.model.parameters()), self.initial_learning_rate, weight_decay=self.weight_decay,
                                     momentum=0.99, nesterov=True)
         self.lr_scheduler = PolyLRScheduler(self.optimizer, self.initial_lr, self.num_epochs)
         if self.continue_training != "None":
