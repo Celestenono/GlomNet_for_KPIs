@@ -16,6 +16,27 @@ from source.dataloading.hover_patch_dataset import HoverPatchDataset
 from source.models.glomNet import HoVerNet
 from source.losses.custum_loss import HoVerNetLoss
 
+from torch.optim.lr_scheduler import LRScheduler
+
+class PolyLRScheduler(LRScheduler):
+    def __init__(self, optimizer, initial_lr: float, max_steps: int, exponent: float = 0.9, current_step: int = None):
+        self.optimizer = optimizer
+        self.initial_lr = initial_lr
+        self.max_steps = max_steps
+        self.exponent = exponent
+        self.ctr = 0
+        super().__init__(optimizer, current_step if current_step is not None else -1, False)
+
+    def step(self, current_step=None):
+        if current_step is None or current_step == -1:
+            current_step = self.ctr
+            self.ctr += 1
+
+        new_lr = self.initial_lr * (1 - current_step / self.max_steps) ** self.exponent
+        print(new_lr)
+        for param_group in self.optimizer.param_groups:
+            param_group['lr'] = new_lr
+
 
 class Trainer_hover():
     def __init__(self, cfg: dict, transforms: Optional[dict] = None) -> None:
@@ -106,6 +127,9 @@ class Trainer_hover():
         self.optimizer = torch.optim.AdamW(filter(lambda p: p.requires_grad, self.model.parameters()),
                                            lr=self.initial_learning_rate,
                                            weight_decay=self.weight_decay)
+        self.optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, self.model.parameters()), self.initial_lr, weight_decay=self.weight_decay,
+                                    momentum=0.99, nesterov=True)
+        self.lr_scheduler = PolyLRScheduler(self.optimizer, self.initial_lr, self.num_epochs)
         if self.continue_training != "None":
             checkpoint = torch.load(self.continue_training)
             self.model.load_state_dict(checkpoint['model_state_dict'])
@@ -186,6 +210,7 @@ class Trainer_hover():
                 epoch_len_train = self.nb_batch_per_epochs
                 print(f"{step_train}/{epoch_len_train}, train_loss: {loss_train.item():.4f}")
                 self.logger.info(f"{step_train}/{epoch_len_train}, train_loss: {loss_train.item():.4f}")
+            self.lr_scheduler.step(epoch)
             epoch_loss_train /= step_train
             epoch_loss_values_train.append(epoch_loss_train)
             print(f"epoch {epoch + 1} average training loss: {epoch_loss_train:.4f}")
@@ -265,7 +290,7 @@ class Trainer_hover():
                         'model_state_dict': self.model.state_dict(),
                         'optimizer_state_dict': self.optimizer.state_dict()
                     }, self.path_output + "/model_segmentation2d_dict_epoch_" + str(
-                        best_epoch_loss_val_epoch) + ".pth")
+                        epoch+1 ) + ".pth")
 
                 print(
                     "current epoch: {} current loss val: {:.4f} best loss val: {:.4f} at epoch {}".format(
