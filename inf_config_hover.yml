@@ -6,7 +6,7 @@ paths:
 hyperparameters:
   dataset_type: test
   fold_num: 0
-  num_workers: 1
+  num_workers: 0
   in_channels: 4
   out_channels: 2
   hovermaps: True
