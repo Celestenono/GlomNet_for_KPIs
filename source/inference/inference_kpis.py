@@ -283,6 +283,7 @@ def main(inputdir, path_model, output_dir, df):
             wsi_prediction_shape = wsi_prediction.shape
             wsi_prediction = Image.fromarray(wsi_prediction.astype(np.uint8))
             wsi_prediction = wsi_prediction.resize((wsi_prediction_shape[0]*2, wsi_prediction_shape[1]*2))
+            wsi_prediction = np.array(wsi_prediction)
             wsi_prediction[wsi_prediction <= 1] = 0
             wsi_prediction[wsi_prediction != 0] = 1
             sm = 10000
