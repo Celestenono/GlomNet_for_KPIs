@@ -281,7 +281,7 @@ def main(inputdir, path_model, output_dir, df):
 
             wsi_prediction = test_results["inf_results_bin"]
             wsi_prediction = Image.fromarray(wsi_prediction.astype(np.uint8))
-            wsi_prediction = wsi_prediction.resize((test_image_shape[0], test_image_shape[1]))
+            wsi_prediction = wsi_prediction.resize((test_image_shape[1], test_image_shape[0]))
             wsi_prediction = np.array(wsi_prediction)
             wsi_prediction[wsi_prediction < 1] = 0
             wsi_prediction[wsi_prediction != 0] = 1
@@ -338,6 +338,10 @@ def main(inputdir, path_model, output_dir, df):
         wsi_AP50.append((ap50[0]))
         wsi_dice.append((dice_coefficient(wsi_prediction, mask_tiff_X20)))
 
+        print((f1_scores_50[0]))
+        print((ap50[0]))
+        print((dice_coefficient(wsi_prediction, mask_tiff_X20)))
+
         row = len(df)
         df.loc[row] = [case_name, dice_coefficient(wsi_prediction, mask_tiff_X20), f1_scores_50[0], ap50[0]]
         df.to_csv(os.path.join(output_dir, 'testing_wsi_results_all.csv'), index=False)
@@ -350,6 +354,10 @@ if __name__ == "__main__":
     # with tempfile.TemporaryDirectory() as tempdir:
     input_dir = '/scratch/nmoreau/KPIs_challenge/Validation_bis/'
     output_dir = '/scratch/nmoreau/KPIs_challenge/output_dir/'
+
+    # input_dir = '/Users/nmoreau/Documents/KPIs_challenge/Validation_bis/'
+    # output_dir = '/Users/nmoreau/Documents/KPIs_challenge/output_dir/'
+
     model_dir = '/scratch/nmoreau/KPIs_challenge/training_runs/runs_22_07_2024_13_57_17_fold_0_hover/best_metric_model_segmentation2d_dict_epoch_150.pth'
 
     df = pd.DataFrame(columns=['case name', 'wsi_dice', 'wsi_F1_50', 'wsi_AP50'])
