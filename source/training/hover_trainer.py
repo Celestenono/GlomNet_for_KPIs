@@ -127,9 +127,9 @@ class Trainer_hover():
         self.optimizer = torch.optim.AdamW(filter(lambda p: p.requires_grad, self.model.parameters()),
                                            lr=self.initial_learning_rate,
                                            weight_decay=self.weight_decay)
-        self.optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, self.model.parameters()), self.initial_learning_rate, weight_decay=self.weight_decay,
-                                    momentum=0.99, nesterov=True)
-        self.lr_scheduler = PolyLRScheduler(self.optimizer, self.initial_learning_rate, self.nb_epochs)
+        # self.optimizer = torch.optim.SGD(filter(lambda p: p.requires_grad, self.model.parameters()), self.initial_learning_rate, weight_decay=self.weight_decay,
+        #                             momentum=0.99, nesterov=True)
+        # self.lr_scheduler = PolyLRScheduler(self.optimizer, self.initial_learning_rate, self.nb_epochs)
         if self.continue_training != "None":
             checkpoint = torch.load(self.continue_training)
             self.model.load_state_dict(checkpoint['model_state_dict'])
@@ -284,7 +284,7 @@ class Trainer_hover():
                         best_epoch_loss_val_epoch) + ".pth")
                     print("saved new best metric model")
                     self.logger.info("saved new best metric model")
-                if epoch+1 == 50 or epoch+1 == 100:
+                if epoch+1 % 50 == 0 or epoch+1 % 100 == 0:
                     torch.save({
                         'epoch': epoch,
                         'model_state_dict': self.model.state_dict(),
