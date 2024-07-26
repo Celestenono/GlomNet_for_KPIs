@@ -275,14 +275,13 @@ def main(inputdir, path_model, output_dir, df):
 
     with torch.no_grad():
         for test_data in test_loader:
-            test_image, test_image_name = test_data["image"], test_data["image_path"]
-            print(test_image_name)
+            test_image, test_image_path, test_image_shape = test_data["image"], test_data["image_path"], test_data["image_x20_shape"]
+            print(test_image_path)
             test_results = inference(test_image, patch_size=(512, 512), batch_size=1, model=model, device=device, post_trans=post_trans)
 
             wsi_prediction = test_results["inf_results_bin"]
-            wsi_prediction_shape = wsi_prediction.shape
             wsi_prediction = Image.fromarray(wsi_prediction.astype(np.uint8))
-            wsi_prediction = wsi_prediction.resize((wsi_prediction_shape[0]*2, wsi_prediction_shape[1]*2))
+            wsi_prediction = wsi_prediction.resize((test_image_shape[0], test_image_shape[1]))
             wsi_prediction = np.array(wsi_prediction)
             wsi_prediction[wsi_prediction < 1] = 0
             wsi_prediction[wsi_prediction != 0] = 1
@@ -290,7 +289,7 @@ def main(inputdir, path_model, output_dir, df):
             wsi_prediction_sm = sodelete(wsi_prediction, sm)
 
 
-            preds_root = test_image_name[0].replace(inputdir, output_dir).replace("_wsi.tiff", "_mask.tiff").replace(
+            preds_root = test_image_path[0].replace(inputdir, output_dir).replace("_wsi.tiff", "_mask.tiff").replace(
                 "/img/", "/")
             p = Path(preds_root)
             if not os.path.exists(p.parent):
@@ -298,9 +297,9 @@ def main(inputdir, path_model, output_dir, df):
             wsi_prediction_sm = Image.fromarray(wsi_prediction_sm.astype(np.uint8))
             wsi_prediction_sm.save(preds_root)
             # plt.imsave(preds_root, wsi_prediction_sm, cmap=cm.gray)
-    # print(images)
-    # print(segs)
-    #
+    print(images)
+    print(segs)
+
 
     wsi_F1_50 = []
     wsi_AP50 = []
@@ -311,7 +310,7 @@ def main(inputdir, path_model, output_dir, df):
 
         pred = img.replace(inputdir, output_dir).replace("_wsi.tiff", "_mask.tiff").replace("/img/", "/")
 
-        if 'NEP25' in test_image_name:
+        if 'NEP25' in img:
             lv = 1
         else:
             lv = 2
@@ -337,10 +336,10 @@ def main(inputdir, path_model, output_dir, df):
 
         wsi_F1_50.append((f1_scores_50[0]))
         wsi_AP50.append((ap50[0]))
-        wsi_dice.append((dice_coefficient(wsi_prediction_sm, mask_tiff_X20)))
+        wsi_dice.append((dice_coefficient(wsi_prediction, mask_tiff_X20)))
 
         row = len(df)
-        df.loc[row] = [case_name, dice_coefficient(wsi_prediction_sm, mask_tiff_X20), f1_scores_50[0], ap50[0]]
+        df.loc[row] = [case_name, dice_coefficient(wsi_prediction, mask_tiff_X20), f1_scores_50[0], ap50[0]]
         df.to_csv(os.path.join(output_dir, 'testing_wsi_results_all.csv'), index=False)
 
     print("slide level F1 metric:", np.mean(wsi_F1_50))

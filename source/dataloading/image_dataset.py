@@ -39,19 +39,21 @@ class ImageDataset(Dataset):
     def _transform(self, index: int):
         image_path = self.list_data[index]
         if 'NEP25' in image_path:
-            lv = 2
+            lv = 1
         else:
-            lv = 4
+            lv = 2
         if os.path.exists(image_path):
             original_tiff = tifffile.imread(image_path, key=0)
-            array_microscope = ndi.zoom(original_tiff, (1 / lv, 1 / lv, 1), order=1)
+            tiff_x20 = ndi.zoom(original_tiff, (1 / lv, 1 / lv, 1), order=1)
+            tiff_x20_shape = tiff_x20.shape
         else:
             raise Exception("No file: "+image_path)
+        array_microscope = ndi.zoom(tiff_x20, (0.5, 0.5, 1), order=1)
         # array_microscope = np.array(image_microscope)
         array_microscope_alpha_channel = np.expand_dims(array_microscope[:, :, 2], axis=2)
         array_microscope = np.concatenate((array_microscope, array_microscope_alpha_channel), axis=2)
         array_microscope[:, :, 3][array_microscope[:, :, 2] > 0] = 255
-        item = {"image": array_microscope, "image_path": image_path}
+        item = {"image": array_microscope, "image_path": image_path, "image_x20_shape": tiff_x20_shape}
         item_trans = self.transform(item)
         return item_trans
 
