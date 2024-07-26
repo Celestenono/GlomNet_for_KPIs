@@ -284,7 +284,7 @@ def main(inputdir, path_model, output_dir, df):
             wsi_prediction = Image.fromarray(wsi_prediction.astype(np.uint8))
             wsi_prediction = wsi_prediction.resize((wsi_prediction_shape[0]*2, wsi_prediction_shape[1]*2))
             wsi_prediction = np.array(wsi_prediction)
-            wsi_prediction[wsi_prediction <= 1] = 0
+            wsi_prediction[wsi_prediction < 1] = 0
             wsi_prediction[wsi_prediction != 0] = 1
             sm = 10000
             wsi_prediction_sm = sodelete(wsi_prediction, sm)
@@ -295,7 +295,9 @@ def main(inputdir, path_model, output_dir, df):
             p = Path(preds_root)
             if not os.path.exists(p.parent):
                 os.makedirs(p.parent)
-            plt.imsave(preds_root, wsi_prediction_sm, cmap=cm.gray)
+            wsi_prediction_sm = Image.fromarray(wsi_prediction_sm.astype(np.uint8))
+            wsi_prediction_sm.save(preds_root)
+            # plt.imsave(preds_root, wsi_prediction_sm, cmap=cm.gray)
     # print(images)
     # print(segs)
     #
