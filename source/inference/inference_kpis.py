@@ -293,7 +293,7 @@ def main(inputdir, path_model, output_dir, df):
             preds_root = test_image_name[0].replace(inputdir, output_dir).replace("_wsi.tiff", "_mask.tiff").replace(
                 "/img/", "/")
             p = Path(preds_root)
-            if not os.path.exists(preds_root):
+            if not os.path.exists(p.parent):
                 os.makedirs(p.parent)
             plt.imsave(preds_root, wsi_prediction_sm, cmap=cm.gray)
     # print(images)
