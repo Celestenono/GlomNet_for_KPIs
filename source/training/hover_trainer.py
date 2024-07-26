@@ -210,7 +210,7 @@ class Trainer_hover():
                 epoch_len_train = self.nb_batch_per_epochs
                 print(f"{step_train}/{epoch_len_train}, train_loss: {loss_train.item():.4f}")
                 self.logger.info(f"{step_train}/{epoch_len_train}, train_loss: {loss_train.item():.4f}")
-            self.lr_scheduler.step(epoch)
+            # self.lr_scheduler.step(epoch)
             epoch_loss_train /= step_train
             epoch_loss_values_train.append(epoch_loss_train)
             print(f"epoch {epoch + 1} average training loss: {epoch_loss_train:.4f}")
