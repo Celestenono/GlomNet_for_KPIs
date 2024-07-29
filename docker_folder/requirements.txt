@@ -9,7 +9,6 @@ kiwisolver
 matplotlib
 monai
 numpy
-opencv-python==4.7.0.72
 packaging
 pandas
 pillow
