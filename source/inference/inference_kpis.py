@@ -354,7 +354,7 @@ if __name__ == "__main__":
     # input_dir = '/Users/nmoreau/Documents/KPIs_challenge/Validation_bis/'
     # output_dir = '/Users/nmoreau/Documents/KPIs_challenge/output_dir/'
 
-    model_dir = '/scratch/nmoreau/KPIs_challenge/training_runs/runs_26_07_2024_18_32_00_fold_0_hover/best_metric_model_segmentation2d_dict_epoch_500.pth'
+    model_dir = '/scratch/nmoreau/KPIs_challenge/training_runs/runs_26_07_2024_18_32_00_fold_0_hover/best_metric_model_segmentation2d_dict_epoch_495.pth'
 
     df = pd.DataFrame(columns=['case name', 'wsi_dice', 'wsi_F1_50', 'wsi_AP50'])
     main(input_dir, model_dir, output_dir, df)
