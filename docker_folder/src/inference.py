@@ -18,8 +18,6 @@ import scipy.ndimage as ndi
 import numpy as np
 import pandas as pd
 
-from source.dataloading.image_dataset import ImageDataset
-
 from monai.transforms import (
     EnsureChannelFirstd,
     ScaleIntensityd,
@@ -29,6 +27,35 @@ from monai.transforms import (
 from source.models.glomNet import HoVerNet
 
 from pathlib import Path
+from monai.data.dataset import Dataset
+
+class ImageDataset(Dataset):
+    def __init__(self, list_data, transform = None):
+        super().__init__(data=list_data, transform=transform)
+        self.list_data=list_data
+        self.transform = transform
+    def __len__(self):
+        return len(self.data)
+    def _transform(self, index: int):
+        image_path = self.list_data[index]
+        if 'NEP25' in image_path:
+            lv = 1
+        else:
+            lv = 2
+        if os.path.exists(image_path):
+            original_tiff = tifffile.imread(image_path, key=0)
+            tiff_x20 = ndi.zoom(original_tiff, (1 / lv, 1 / lv, 1), order=1)
+            tiff_x20_shape = tiff_x20.shape
+        else:
+            raise Exception("No file: "+image_path)
+        array_microscope = ndi.zoom(tiff_x20, (0.5, 0.5, 1), order=1)
+        # array_microscope = np.array(image_microscope)
+        array_microscope_alpha_channel = np.expand_dims(array_microscope[:, :, 2], axis=2)
+        array_microscope = np.concatenate((array_microscope, array_microscope_alpha_channel), axis=2)
+        array_microscope[:, :, 3][array_microscope[:, :, 2] > 0] = 255
+        item = {"image": array_microscope, "image_path": image_path, "image_x20_shape": tiff_x20_shape}
+        item_trans = self.transform(item)
+        return item_trans
 
 
 def calculate_contour_iou(contour1, contour2, image_shape):
