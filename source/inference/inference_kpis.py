@@ -297,8 +297,6 @@ def main(inputdir, path_model, output_dir, df):
             wsi_prediction_sm = Image.fromarray(wsi_prediction_sm.astype(np.uint8))
             wsi_prediction_sm.save(preds_root)
             # plt.imsave(preds_root, wsi_prediction_sm, cmap=cm.gray)
-    print(images)
-    print(segs)
 
 
     wsi_F1_50 = []
@@ -321,6 +319,8 @@ def main(inputdir, path_model, output_dir, df):
 
         mask_tiff = tifffile.imread(seg, key=0)
         mask_tiff_X20 = ndi.zoom(mask_tiff, (1 / lv, 1 / lv), order=1)
+        mask_tiff_X20[mask_tiff_X20 < 1] = 0
+        mask_tiff_X20[mask_tiff_X20 != 0] = 1
 
         wsi_prediction = tifffile.imread(pred, key=0)
 
