@@ -382,7 +382,7 @@ def main(inputdir, path_model, output_dir, df):
             # plt.imsave(preds_root, wsi_prediction_sm, cmap=cm.gray)
 
             seg = test_image_path[0].replace("_wsi.tiff", "_mask.tiff").replace(
-                "/img/", "/mask")
+                "/img/", "/mask/")
 
             if 'NEP25' in seg:
                 lv = 1
