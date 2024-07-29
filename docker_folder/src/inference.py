@@ -396,10 +396,10 @@ def main(inputdir, path_model, output_dir, df):
             tiff_X20_shape = mask_tiff_X20.shape
 
             ret, binary = cv2.threshold(wsi_prediction, 0, 255, cv2.THRESH_BINARY_INV)
-            preds_contours, _ = cv2.findContours(binary.astype(np.uint8), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            _, preds_contours, _ = cv2.findContours(binary.astype(np.uint8), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
             ret, binary = cv2.threshold(mask_tiff_X20, 0, 255, cv2.THRESH_BINARY_INV)
-            masks_contours, _ = cv2.findContours(binary.astype(np.uint8), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            _, masks_contours, _ = cv2.findContours(binary.astype(np.uint8), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
             precision_scores, recall_scores, f1_scores_50 = calculate_metrics_ap50(preds_contours[1:],
                                                                                    masks_contours[1:],
                                                                                    (tiff_X20_shape[0],
@@ -426,23 +426,24 @@ def main(inputdir, path_model, output_dir, df):
         else:
             lv = 2
 
-        img_tiff = tifffile.imread(img, key=0)
-        img_tiff_X20 = ndi.zoom(img_tiff, (1 / lv, 1 / lv, 1), order=1)
-        tiff_X20_shape = img_tiff_X20.shape
+        # img_tiff = tifffile.imread(img, key=0)
+        # img_tiff_X20 = ndi.zoom(img_tiff, (1 / lv, 1 / lv, 1), order=1)
+        # tiff_X20_shape = img_tiff_X20.shape
 
         mask_tiff = tifffile.imread(seg, key=0)
         mask_tiff_X20 = ndi.zoom(mask_tiff, (1 / lv, 1 / lv), order=1)
         mask_tiff_X20[mask_tiff_X20 < 1] = 0
         mask_tiff_X20[mask_tiff_X20 != 0] = 1
+        tiff_X20_shape = mask_tiff_X20.shape
 
         wsi_prediction = tifffile.imread(pred, key=0)
 
         'f1'
         ret, binary = cv2.threshold(wsi_prediction, 0, 255, cv2.THRESH_BINARY_INV)
-        preds_contours, _ = cv2.findContours(binary.astype(np.uint8), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        _, preds_contours, _ = cv2.findContours(binary.astype(np.uint8), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
         ret, binary = cv2.threshold(mask_tiff_X20, 0, 255, cv2.THRESH_BINARY_INV)
-        masks_contours, _ = cv2.findContours(binary.astype(np.uint8), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        _, masks_contours, _ = cv2.findContours(binary.astype(np.uint8), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         precision_scores, recall_scores, f1_scores_50 = calculate_metrics_ap50(preds_contours[1:], masks_contours[1:],
                                                                                (tiff_X20_shape[0], tiff_X20_shape[1]))
         ap50 = precision_scores
