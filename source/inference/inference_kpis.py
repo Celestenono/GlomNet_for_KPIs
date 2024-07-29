@@ -12,26 +12,21 @@ import cv2
 import logging
 import os
 import sys
-import tempfile
 from glob import glob
 
 import torch
 from PIL import Image
 
 from monai import config
-from monai.data import ArrayDataset, create_test_image_2d, decollate_batch, DataLoader
+from monai.data import decollate_batch, DataLoader
 from monai.inferers import sliding_window_inference
-from monai.metrics import DiceMetric
-from monai.networks.nets import UNet
-from monai.transforms import Activations, AsDiscrete, Compose, LoadImage, SaveImage, ScaleIntensity, Resize
+from monai.transforms import Activations, AsDiscrete
 from matplotlib import cm
 import matplotlib.pyplot as plt
 import tifffile
 import scipy.ndimage as ndi
-import imageio
 import numpy as np
 import pandas as pd
-from numpy import random
 
 from source.dataloading.image_dataset import ImageDataset
 
