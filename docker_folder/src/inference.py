@@ -344,7 +344,7 @@ if __name__ == "__main__":
     # input_dir = '/Users/nmoreau/Documents/KPIs_challenge/Validation_bis/'
     # output_dir = '/Users/nmoreau/Documents/KPIs_challenge/output_dir/'
 
-    model_path = 'best_metric_model_segmentation2d_dict_epoch_150.pth'
+    model_path = 'best_model.pth'
 
     df = pd.DataFrame(columns=['case name', 'wsi_dice', 'wsi_F1_50', 'wsi_AP50'])
     main(input_dir, model_path, output_dir, df)
