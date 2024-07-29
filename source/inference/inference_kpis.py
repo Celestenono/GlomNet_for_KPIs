@@ -305,6 +305,7 @@ def main(inputdir, path_model, output_dir, df):
     for img, seg in zip(images, segs):
 
         case_name = os.path.basename(img)
+        print(case_name)
 
         pred = img.replace(inputdir, output_dir).replace("_wsi.tiff", "_mask.tiff").replace("/img/", "/")
 
