@@ -349,6 +349,7 @@ def main(inputdir, path_model, output_dir, df):
     test_loader = DataLoader(test_ds, batch_size=1, num_workers=0, pin_memory=torch.cuda.is_available())
     post_trans = Compose([Activations(softmax=True), AsDiscrete(argmax=True)])
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(device)
     model = GlomNet(in_channels=4, out_channels=2, backbone="efficientnet-b7", hovermaps=True)
 
     model.to(device)
@@ -441,8 +442,9 @@ if __name__ == "__main__":
 
     # input_dir = '/Users/nmoreau/Documents/KPIs_challenge/Validation_bis/'
     # output_dir = '/Users/nmoreau/Documents/KPIs_challenge/output_dir/'
-
+    #
     model_path = './src/best_model.pth'
+    # model_path = '/Users/nmoreau/Documents/Code/Python/GlomNet_for_KPIs/docker_folder/src/best_model.pth'
 
     df = pd.DataFrame(columns=['case name', 'wsi_dice', 'wsi_F1_50', 'wsi_AP50'])
     main(input_dir, model_path, output_dir, df)
