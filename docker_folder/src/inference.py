@@ -375,94 +375,94 @@ def main(inputdir, path_model, output_dir, df):
             preds_root = test_image_path[0].replace(inputdir, output_dir).replace("_wsi.tiff", "_mask.tiff").replace(
                 "/img/", "/")
             p = Path(preds_root)
-            # if not os.path.exists(p.parent):
-            #     os.makedirs(p.parent)
-            # wsi_prediction_sm = Image.fromarray(wsi_prediction_sm.astype(np.uint8))
-            # wsi_prediction_sm.save(preds_root)
-            # plt.imsave(preds_root, wsi_prediction_sm, cmap=cm.gray)
+            if not os.path.exists(p.parent):
+                os.makedirs(p.parent)
+            wsi_prediction_sm = Image.fromarray(wsi_prediction_sm.astype(np.uint8))
+            wsi_prediction_sm.save(preds_root)
+            plt.imsave(preds_root, wsi_prediction_sm, cmap=cm.gray)
 
-            seg = test_image_path[0].replace("_wsi.tiff", "_mask.tiff").replace(
-                "/img/", "/mask/")
+            # seg = test_image_path[0].replace("_wsi.tiff", "_mask.tiff").replace(
+            #     "/img/", "/mask/")
+            #
+            # if 'NEP25' in seg:
+            #     lv = 1
+            # else:
+            #     lv = 2
+            #
+            # mask_tiff = tifffile.imread(seg, key=0)
+            # mask_tiff_X20 = ndi.zoom(mask_tiff, (1 / lv, 1 / lv), order=1)
+            # mask_tiff_X20[mask_tiff_X20 < 1] = 0
+            # mask_tiff_X20[mask_tiff_X20 != 0] = 1
+            # tiff_X20_shape = mask_tiff_X20.shape
+            #
+            # ret, binary = cv2.threshold(wsi_prediction, 0, 255, cv2.THRESH_BINARY_INV)
+            # _, preds_contours, _ = cv2.findContours(binary.astype(np.uint8), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            #
+            # ret, binary = cv2.threshold(mask_tiff_X20, 0, 255, cv2.THRESH_BINARY_INV)
+            # _, masks_contours, _ = cv2.findContours(binary.astype(np.uint8), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            # precision_scores, recall_scores, f1_scores_50 = calculate_metrics_ap50(preds_contours[1:],
+            #                                                                        masks_contours[1:],
+            #                                                                        (tiff_X20_shape[0],
+            #                                                                         tiff_X20_shape[1]))
+            # ap50 = precision_scores
+            #
+            # print((f1_scores_50[0]))
+            # print((ap50[0]))
+            # print((dice_coefficient(wsi_prediction, mask_tiff_X20)))
 
-            if 'NEP25' in seg:
-                lv = 1
-            else:
-                lv = 2
 
-            mask_tiff = tifffile.imread(seg, key=0)
-            mask_tiff_X20 = ndi.zoom(mask_tiff, (1 / lv, 1 / lv), order=1)
-            mask_tiff_X20[mask_tiff_X20 < 1] = 0
-            mask_tiff_X20[mask_tiff_X20 != 0] = 1
-            tiff_X20_shape = mask_tiff_X20.shape
+    wsi_F1_50 = []
+    wsi_AP50 = []
+    wsi_dice = []
+    for img, seg in zip(images, segs):
 
-            ret, binary = cv2.threshold(wsi_prediction, 0, 255, cv2.THRESH_BINARY_INV)
-            _, preds_contours, _ = cv2.findContours(binary.astype(np.uint8), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        case_name = os.path.basename(img)
+        print(case_name)
 
-            ret, binary = cv2.threshold(mask_tiff_X20, 0, 255, cv2.THRESH_BINARY_INV)
-            _, masks_contours, _ = cv2.findContours(binary.astype(np.uint8), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-            precision_scores, recall_scores, f1_scores_50 = calculate_metrics_ap50(preds_contours[1:],
-                                                                                   masks_contours[1:],
-                                                                                   (tiff_X20_shape[0],
-                                                                                    tiff_X20_shape[1]))
-            ap50 = precision_scores
+        pred = img.replace(inputdir, output_dir).replace("_wsi.tiff", "_mask.tiff").replace("/img/", "/")
 
-            print((f1_scores_50[0]))
-            print((ap50[0]))
-            print((dice_coefficient(wsi_prediction, mask_tiff_X20)))
+        if 'NEP25' in img:
+            lv = 1
+        else:
+            lv = 2
 
+        # img_tiff = tifffile.imread(img, key=0)
+        # img_tiff_X20 = ndi.zoom(img_tiff, (1 / lv, 1 / lv, 1), order=1)
+        # tiff_X20_shape = img_tiff_X20.shape
 
-    # wsi_F1_50 = []
-    # wsi_AP50 = []
-    # wsi_dice = []
-    # for img, seg in zip(images, segs):
-    #
-    #     case_name = os.path.basename(img)
-    #     print(case_name)
-    #
-    #     pred = img.replace(inputdir, output_dir).replace("_wsi.tiff", "_mask.tiff").replace("/img/", "/")
-    #
-    #     if 'NEP25' in img:
-    #         lv = 1
-    #     else:
-    #         lv = 2
-    #
-    #     # img_tiff = tifffile.imread(img, key=0)
-    #     # img_tiff_X20 = ndi.zoom(img_tiff, (1 / lv, 1 / lv, 1), order=1)
-    #     # tiff_X20_shape = img_tiff_X20.shape
-    #
-    #     mask_tiff = tifffile.imread(seg, key=0)
-    #     mask_tiff_X20 = ndi.zoom(mask_tiff, (1 / lv, 1 / lv), order=1)
-    #     mask_tiff_X20[mask_tiff_X20 < 1] = 0
-    #     mask_tiff_X20[mask_tiff_X20 != 0] = 1
-    #     tiff_X20_shape = mask_tiff_X20.shape
-    #
-    #     wsi_prediction = tifffile.imread(pred, key=0)
-    #
-    #     'f1'
-    #     ret, binary = cv2.threshold(wsi_prediction, 0, 255, cv2.THRESH_BINARY_INV)
-    #     _, preds_contours, _ = cv2.findContours(binary.astype(np.uint8), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    #
-    #     ret, binary = cv2.threshold(mask_tiff_X20, 0, 255, cv2.THRESH_BINARY_INV)
-    #     _, masks_contours, _ = cv2.findContours(binary.astype(np.uint8), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    #     precision_scores, recall_scores, f1_scores_50 = calculate_metrics_ap50(preds_contours[1:], masks_contours[1:],
-    #                                                                            (tiff_X20_shape[0], tiff_X20_shape[1]))
-    #     ap50 = precision_scores
-    #
-    #     wsi_F1_50.append((f1_scores_50[0]))
-    #     wsi_AP50.append((ap50[0]))
-    #     wsi_dice.append((dice_coefficient(wsi_prediction, mask_tiff_X20)))
-    #
-    #     print((f1_scores_50[0]))
-    #     print((ap50[0]))
-    #     print((dice_coefficient(wsi_prediction, mask_tiff_X20)))
-    #
-    #     row = len(df)
-    #     df.loc[row] = [case_name, dice_coefficient(wsi_prediction, mask_tiff_X20), f1_scores_50[0], ap50[0]]
-    #     df.to_csv(os.path.join(output_dir, 'testing_wsi_results_all.csv'), index=False)
-    #
-    # print("slide level F1 metric:", np.mean(wsi_F1_50))
-    # print("slide level AP(50) metric:", np.mean(wsi_AP50))
-    # print("slide level Dice metric:", np.mean(wsi_dice))
+        mask_tiff = tifffile.imread(seg, key=0)
+        mask_tiff_X20 = ndi.zoom(mask_tiff, (1 / lv, 1 / lv), order=1)
+        mask_tiff_X20[mask_tiff_X20 < 1] = 0
+        mask_tiff_X20[mask_tiff_X20 != 0] = 1
+        tiff_X20_shape = mask_tiff_X20.shape
+
+        wsi_prediction = tifffile.imread(pred, key=0)
+
+        'f1'
+        ret, binary = cv2.threshold(wsi_prediction, 0, 255, cv2.THRESH_BINARY_INV)
+        _, preds_contours, _ = cv2.findContours(binary.astype(np.uint8), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+        ret, binary = cv2.threshold(mask_tiff_X20, 0, 255, cv2.THRESH_BINARY_INV)
+        _, masks_contours, _ = cv2.findContours(binary.astype(np.uint8), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        precision_scores, recall_scores, f1_scores_50 = calculate_metrics_ap50(preds_contours[1:], masks_contours[1:],
+                                                                               (tiff_X20_shape[0], tiff_X20_shape[1]))
+        ap50 = precision_scores
+
+        wsi_F1_50.append((f1_scores_50[0]))
+        wsi_AP50.append((ap50[0]))
+        wsi_dice.append((dice_coefficient(wsi_prediction, mask_tiff_X20)))
+
+        print((f1_scores_50[0]))
+        print((ap50[0]))
+        print((dice_coefficient(wsi_prediction, mask_tiff_X20)))
+
+        row = len(df)
+        df.loc[row] = [case_name, dice_coefficient(wsi_prediction, mask_tiff_X20), f1_scores_50[0], ap50[0]]
+        df.to_csv(os.path.join(output_dir, 'testing_wsi_results_all.csv'), index=False)
+
+    print("slide level F1 metric:", np.mean(wsi_F1_50))
+    print("slide level AP(50) metric:", np.mean(wsi_AP50))
+    print("slide level Dice metric:", np.mean(wsi_dice))
 
 if __name__ == "__main__":
     # with tempfile.TemporaryDirectory() as tempdir:
