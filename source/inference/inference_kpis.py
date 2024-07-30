@@ -309,14 +309,15 @@ def main(inputdir, path_model, output_dir, df):
         else:
             lv = 2
 
-        img_tiff = tifffile.imread(img, key=0)
-        img_tiff_X20 = ndi.zoom(img_tiff, (1 / lv, 1 / lv, 1), order=1)
-        tiff_X20_shape = img_tiff_X20.shape
+        # img_tiff = tifffile.imread(img, key=0)
+        # img_tiff_X20 = ndi.zoom(img_tiff, (1 / lv, 1 / lv, 1), order=1)
+        # tiff_X20_shape = img_tiff_X20.shape
 
         mask_tiff = tifffile.imread(seg, key=0)
         mask_tiff_X20 = ndi.zoom(mask_tiff, (1 / lv, 1 / lv), order=1)
         mask_tiff_X20[mask_tiff_X20 < 1] = 0
         mask_tiff_X20[mask_tiff_X20 != 0] = 1
+        tiff_X20_shape = mask_tiff_X20.shape
 
         wsi_prediction = tifffile.imread(pred, key=0)
 
@@ -354,7 +355,7 @@ if __name__ == "__main__":
     # input_dir = '/Users/nmoreau/Documents/KPIs_challenge/Validation_bis/'
     # output_dir = '/Users/nmoreau/Documents/KPIs_challenge/output_dir/'
 
-    model_dir = '/scratch/nmoreau/KPIs_challenge/training_runs/runs_26_07_2024_18_32_00_fold_0_hover/best_metric_model_segmentation2d_dict_epoch_207.pth'
+    model_dir = '/scratch/nmoreau/KPIs_challenge/training_runs/runs_26_07_2024_18_32_00_fold_0_hover/iterator_train_model_segmentation2d_dict_epoch_1.pth'
 
     df = pd.DataFrame(columns=['case name', 'wsi_dice', 'wsi_F1_50', 'wsi_AP50'])
     main(input_dir, model_dir, output_dir, df)
