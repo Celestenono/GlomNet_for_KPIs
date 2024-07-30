@@ -284,13 +284,13 @@ class Trainer_hover():
                         best_epoch_loss_val_epoch) + ".pth")
                     print("saved new best metric model")
                     self.logger.info("saved new best metric model")
-                if epoch+1 % 50 == 0 or epoch+1 % 100 == 0:
+                if (epoch+1) % 10 == 0 or (epoch+1) % 100 == 0:
                     torch.save({
                         'epoch': epoch,
                         'model_state_dict': self.model.state_dict(),
                         'optimizer_state_dict': self.optimizer.state_dict()
                     }, self.path_output + "/model_segmentation2d_dict_epoch_" + str(
-                        epoch+1 ) + ".pth")
+                        epoch+1) + ".pth")
 
                 print(
                     "current epoch: {} current loss val: {:.4f} best loss val: {:.4f} at epoch {}".format(
