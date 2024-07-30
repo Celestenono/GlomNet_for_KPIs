@@ -379,7 +379,6 @@ def main(inputdir, path_model, output_dir, df):
                 os.makedirs(p.parent)
             wsi_prediction_sm = Image.fromarray(wsi_prediction_sm.astype(np.uint8))
             wsi_prediction_sm.save(preds_root)
-            plt.imsave(preds_root, wsi_prediction_sm, cmap=cm.gray)
 
             # seg = test_image_path[0].replace("_wsi.tiff", "_mask.tiff").replace(
             #     "/img/", "/mask/")
